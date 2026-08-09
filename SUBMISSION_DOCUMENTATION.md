@@ -7,12 +7,13 @@
 
 ## 📌 Submission Overview & Quick Links
 
-- **GitHub Repository:** `https://github.com/your-username/apex-erp-crm`
-- **Live Frontend Application:** `https://apex-os-erp.vercel.app` *(or local http://localhost:5173)*
-- **Live Backend API URL:** `https://apex-os-api.onrender.com/api` *(or local http://localhost:5000/api)*
+- **GitHub Repository:** `https://github.com/VishalSudhaArul/CRM`
+- **Live Frontend Application:** `https://crm-swart-omega-24.vercel.app`
+- **Live Backend API URL:** `https://crm-backend-lc33.onrender.com/api`
 - **Postman API Collection:** Included in project root as `postman_collection.json`
 - **Docker Compose:** Provided in project root as `docker-compose.yml`
 - **CI/CD Pipeline:** Configured in `.github/workflows/ci.yml`
+
 
 ---
 

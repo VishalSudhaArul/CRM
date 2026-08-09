@@ -6,6 +6,15 @@
 
 ---
 
+### 🌐 Live Deployment & Quick Links
+- **Live Frontend App (Vercel):** [https://crm-swart-omega-24.vercel.app](https://crm-swart-omega-24.vercel.app)
+- **Live Backend API (Render):** [https://crm-backend-lc33.onrender.com/api](https://crm-backend-lc33.onrender.com/api)
+- **GitHub Repository:** [https://github.com/VishalSudhaArul/CRM](https://github.com/VishalSudhaArul/CRM)
+- **Postman API Collection:** `postman_collection.json` (in project root)
+
+---
+
+
 ## 📋 Table of Contents
 1. [Project Overview & Key Business Flows](#-project-overview--key-business-flows)
 2. [Tech Stack Architecture](#-tech-stack-architecture)
