@@ -42,18 +42,33 @@ export function transformRow(row: any): any {
   return transformed;
 }
 
+function prepareSqliteQuery(sql: string, params: any[] = []) {
+  const paramMatches = Array.from(sql.matchAll(/\$(\d+)/g));
+  const sqliteSql = sql.replace(/\$\d+/g, "?");
+
+  let sqliteParams = params;
+  if (paramMatches.length > 0) {
+    sqliteParams = paramMatches.map((m) => {
+      const idx = parseInt(m[1], 10) - 1;
+      return params[idx];
+    });
+  }
+
+  return { sqliteSql, sqliteParams };
+}
+
 export async function query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
   if (isPostgres && pgPool) {
     const res = await pgPool.query(sql, params);
     return res.rows.map(transformRow);
   } else if (sqliteDb) {
-    const sqliteSql = sql.replace(/\$\d+/g, "?");
+    const { sqliteSql, sqliteParams } = prepareSqliteQuery(sql, params);
     const stmt = sqliteDb.prepare(sqliteSql);
     let rows: any[];
     if (sqliteSql.trim().toUpperCase().startsWith("SELECT") || sqliteSql.includes("RETURNING")) {
-      rows = stmt.all(...params);
+      rows = stmt.all(...sqliteParams);
     } else {
-      const info = stmt.run(...params);
+      const info = stmt.run(...sqliteParams);
       rows = info.changes ? [{ id: info.lastInsertRowid }] : [];
     }
     return rows.map(transformRow);
@@ -90,13 +105,13 @@ export async function executeTransaction<T>(
     try {
       sqliteDb.prepare("BEGIN IMMEDIATE").run();
       const txQuery = async (sql: string, params: any[] = []) => {
-        const sqliteSql = sql.replace(/\$\d+/g, "?");
+        const { sqliteSql, sqliteParams } = prepareSqliteQuery(sql, params);
         const stmt = sqliteDb.prepare(sqliteSql);
         let rows: any[];
         if (sqliteSql.trim().toUpperCase().startsWith("SELECT") || sqliteSql.includes("RETURNING")) {
-          rows = stmt.all(...params);
+          rows = stmt.all(...sqliteParams);
         } else {
-          const info = stmt.run(...params);
+          const info = stmt.run(...sqliteParams);
           rows = info.changes ? [{ id: info.lastInsertRowid }] : [];
         }
         return rows.map(transformRow);
