@@ -142,10 +142,13 @@ export const ProductPage: React.FC = () => {
   const handleDeleteProduct = async (id: number) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
     try {
+      setError(null);
       await apiClient.delete(`/products/${id}`);
       fetchProducts();
     } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to delete product");
+      const msg = err.response?.data?.message || "Failed to delete product";
+      setError(msg);
+      alert(msg);
     }
   };
 

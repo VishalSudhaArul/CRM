@@ -18,14 +18,7 @@ export async function seed() {
 
   for (const u of users) {
     const existing = await queryOne(`SELECT id FROM users WHERE email = $1`, [u.email]);
-    if (existing) {
-      await query(`UPDATE users SET password = $1, role = $2, name = $3 WHERE email = $4`, [
-        u.password,
-        u.role,
-        u.name,
-        u.email,
-      ]);
-    } else {
+    if (!existing) {
       await query(`INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4)`, [
         u.name,
         u.email,
@@ -34,7 +27,7 @@ export async function seed() {
       ]);
     }
   }
-  console.log("[Seeding] Core role users seeded.");
+  console.log("[Seeding] Core role users verified.");
 
   const customers = [
     {
@@ -75,19 +68,14 @@ export async function seed() {
 
   for (const c of customers) {
     const existing = await queryOne(`SELECT id FROM customers WHERE email = $1`, [c.email]);
-    if (existing) {
-      await query(
-        `UPDATE customers SET name = $1, mobile = $2, business_name = $3, gst_number = $4, customer_type = $5, address = $6, status = $7, notes = $8 WHERE email = $9`,
-        [c.name, c.mobile, c.businessName, c.gstNumber, c.customerType, c.address, c.status, c.notes, c.email]
-      );
-    } else {
+    if (!existing) {
       await query(
         `INSERT INTO customers (name, mobile, email, business_name, gst_number, customer_type, address, status, follow_up_date, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
         [c.name, c.mobile, c.email, c.businessName, c.gstNumber, c.customerType, c.address, c.status, c.followUpDate || null, c.notes]
       );
     }
   }
-  console.log("[Seeding] Customers seeded.");
+  console.log("[Seeding] Customers verified.");
 
   const products = [
     {
@@ -130,27 +118,22 @@ export async function seed() {
 
   for (const p of products) {
     const existing = await queryOne(`SELECT id FROM products WHERE sku = $1`, [p.sku]);
-    if (existing) {
-      await query(
-        `UPDATE products SET name = $1, category = $2, unit_price = $3, current_stock = $4, minimum_stock = $5, warehouse_location = $6 WHERE sku = $7`,
-        [p.name, p.category, p.unitPrice, p.currentStock, p.minimumStock, p.warehouseLocation, p.sku]
-      );
-    } else {
+    if (!existing) {
       await query(
         `INSERT INTO products (name, sku, category, unit_price, current_stock, minimum_stock, warehouse_location) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [p.name, p.sku, p.category, p.unitPrice, p.currentStock, p.minimumStock, p.warehouseLocation]
       );
     }
   }
-  console.log("[Seeding] Products seeded.");
+  console.log("[Seeding] Products verified.");
   console.log("[Seeding] Database seeding finished successfully.");
 }
 
 export async function autoSeed() {
   try {
-    const admin = await queryOne(`SELECT id FROM users WHERE email = 'admin@erp.com'`);
-    if (!admin) {
-      console.log("[AutoSeed] No admin found. Seeding initial database records...");
+    const anyUser = await queryOne(`SELECT id FROM users LIMIT 1`);
+    if (!anyUser) {
+      console.log("[AutoSeed] Database is empty. Seeding initial database records...");
       await seed();
     }
   } catch (err) {
@@ -164,4 +147,5 @@ if (require.main === module) {
     process.exit(1);
   });
 }
+
 

@@ -145,13 +145,29 @@ export async function updateProductController(req: Request, res: Response) {
       warehouseLocation,
     } = req.body;
 
+    const price = unitPrice !== undefined ? Number(unitPrice) : undefined;
+    const stock = currentStock !== undefined ? Number(currentStock) : undefined;
+    const minStock = minimumStock !== undefined ? Number(minimumStock) : undefined;
+
+    if (price !== undefined && (isNaN(price) || price < 0)) {
+      return res.status(400).json({ message: "Unit price must be a non-negative number" });
+    }
+
+    if (stock !== undefined && (isNaN(stock) || stock < 0 || !Number.isInteger(stock))) {
+      return res.status(400).json({ message: "Current stock must be a non-negative integer" });
+    }
+
+    if (minStock !== undefined && (isNaN(minStock) || minStock < 0 || !Number.isInteger(minStock))) {
+      return res.status(400).json({ message: "Minimum stock must be a non-negative integer" });
+    }
+
     const product = await updateProduct(id, {
       name,
       sku,
       category,
-      unitPrice: unitPrice !== undefined ? Number(unitPrice) : undefined,
-      currentStock: currentStock !== undefined ? Number(currentStock) : undefined,
-      minimumStock: minimumStock !== undefined ? Number(minimumStock) : undefined,
+      unitPrice: price,
+      currentStock: stock,
+      minimumStock: minStock,
       warehouseLocation,
     });
 

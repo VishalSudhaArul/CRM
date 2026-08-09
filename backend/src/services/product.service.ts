@@ -165,7 +165,13 @@ export async function updateProduct(
     params.push(data.name);
     updates.push(`name = $${params.length}`);
   }
-  if (data.sku !== undefined) {
+  if (data.sku !== undefined && data.sku !== "") {
+    if (data.sku !== existing.sku) {
+      const skuExists = await queryOne(`SELECT id FROM products WHERE sku = $1 AND id != $2`, [data.sku, id]);
+      if (skuExists) {
+        throw new Error(`Product with SKU '${data.sku}' already exists`);
+      }
+    }
     params.push(data.sku);
     updates.push(`sku = $${params.length}`);
   }
@@ -173,15 +179,15 @@ export async function updateProduct(
     params.push(data.category);
     updates.push(`category = $${params.length}`);
   }
-  if (data.unitPrice !== undefined) {
+  if (data.unitPrice !== undefined && !isNaN(data.unitPrice)) {
     params.push(data.unitPrice);
     updates.push(`unit_price = $${params.length}`);
   }
-  if (data.currentStock !== undefined) {
+  if (data.currentStock !== undefined && !isNaN(data.currentStock)) {
     params.push(data.currentStock);
     updates.push(`current_stock = $${params.length}`);
   }
-  if (data.minimumStock !== undefined) {
+  if (data.minimumStock !== undefined && !isNaN(data.minimumStock)) {
     params.push(data.minimumStock);
     updates.push(`minimum_stock = $${params.length}`);
   }
@@ -208,6 +214,16 @@ export async function deleteProduct(id: number) {
   if (!existing) {
     throw new Error(`Product with ID ${id} not found`);
   }
+
+  const linkedChallans = await queryOne(
+    `SELECT id FROM challan_items WHERE product_id = $1 LIMIT 1`,
+    [id]
+  );
+  if (linkedChallans) {
+    throw new Error("Cannot delete product because it is associated with existing Sales Challans");
+  }
+
+  await query(`DELETE FROM stock_movements WHERE product_id = $1`, [id]);
   await query(`DELETE FROM products WHERE id = $1`, [id]);
   return existing;
 }

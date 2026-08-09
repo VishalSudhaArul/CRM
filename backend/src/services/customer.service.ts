@@ -214,6 +214,15 @@ export async function deleteCustomer(id: number) {
   if (!existing) {
     throw new Error(`Customer with ID ${id} not found`);
   }
+
+  const linkedChallans = await queryOne(
+    `SELECT id FROM sales_challans WHERE customer_id = $1 LIMIT 1`,
+    [id]
+  );
+  if (linkedChallans) {
+    throw new Error("Cannot delete customer because they are associated with existing Sales Challans");
+  }
+
   await query(`DELETE FROM customers WHERE id = $1`, [id]);
   return existing;
 }
