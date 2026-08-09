@@ -1,0 +1,13 @@
+{
+  "name": "nexus-erp-crm",
+  "version": "1.0.0",
+  "description": "Enterprise ERP + CRM System with Roles, Stock Movement, and Sales Challans",
+  "scripts": {
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "seed": "npm --prefix backend run seed",
+    "test:backend": "npm --prefix backend run test",
+    "build:backend": "npm --prefix backend run build",
+    "build:frontend": "npm --prefix frontend run build"
+  }
+}
