@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "crm-secret-key";
+const JWT_SECRET = process.env.JWT_SECRET || "my_super_secret_crm_key_2026";
 
 export interface AuthRequest extends Request {
   user?: {

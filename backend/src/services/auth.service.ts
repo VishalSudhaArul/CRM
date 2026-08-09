@@ -2,7 +2,7 @@ import { queryOne, query } from "../lib/db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "crm_secret_key";
+const JWT_SECRET = process.env.JWT_SECRET || "my_super_secret_crm_key_2026";
 
 export type RoleType = "ADMIN" | "SALES" | "WAREHOUSE" | "ACCOUNTS" | string;
 
