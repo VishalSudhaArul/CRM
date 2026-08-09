@@ -10,6 +10,7 @@ import stockMovementRoutes from "./routes/stockMovement.routes";
 import challanRoutes from "./routes/challan.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
 import { initDb } from "./lib/db";
+import { autoSeed } from "./seed";
 
 dotenv.config();
 
@@ -43,9 +44,10 @@ app.use((req, res) => {
   res.status(404).json({ message: `API endpoint '${req.method} ${req.url}' not found` });
 });
 
-// Initialize DB schema and start server
+// Initialize DB schema, auto-seed defaults, and start server
 initDb()
-  .then(() => {
+  .then(async () => {
+    await autoSeed();
     app.listen(PORT, () => {
       console.log(`ERP CRM Server running on http://localhost:${PORT}`);
     });

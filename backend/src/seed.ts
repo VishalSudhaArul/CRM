@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { initDb, query, queryOne } from "./lib/db";
 
-async function seed() {
+export async function seed() {
   console.log("[Seeding] Initializing database schema...");
   await initDb();
 
@@ -146,7 +146,22 @@ async function seed() {
   console.log("[Seeding] Database seeding finished successfully.");
 }
 
-seed().catch((e) => {
-  console.error("[Seeding Error]", e);
-  process.exit(1);
-});
+export async function autoSeed() {
+  try {
+    const admin = await queryOne(`SELECT id FROM users WHERE email = 'admin@erp.com'`);
+    if (!admin) {
+      console.log("[AutoSeed] No admin found. Seeding initial database records...");
+      await seed();
+    }
+  } catch (err) {
+    console.error("[AutoSeed Error]", err);
+  }
+}
+
+if (require.main === module) {
+  seed().catch((e) => {
+    console.error("[Seeding Error]", e);
+    process.exit(1);
+  });
+}
+
